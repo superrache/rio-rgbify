@@ -28,7 +28,7 @@ from rio_rgbify.encoders import data_to_rgb
 buffer = bytes if sys.version_info > (3,) else buffer
 
 work_func = None
-global_args = None
+global_args = {}
 src = None
 
 
@@ -192,7 +192,7 @@ def _make_tiles(bbox, src_crs, minz, maxz):
         generator of [x, y, z] tiles that intersect
         the provided bounding box
     """
-    w, s, e, n = transform_bounds(*[src_crs, "EPSG:4326"] + bbox, densify_pts=0)
+    w, s, e, n = transform_bounds(*[src_crs, "EPSG:4326"] + bbox, densify_pts=2)
 
     EPSILON = 1.0e-10
 
@@ -256,9 +256,9 @@ class RGBTiler:
         outpath,
         min_z,
         max_z,
-        interval=1,
-        base_val=0,
-        round_digits=0,
+        interval: float = 1,
+        base_val: float = 0,
+        round_digits: float = 0,
         bounding_tile=None,
         **kwargs
     ):
@@ -269,7 +269,7 @@ class RGBTiler:
         self.max_z = max_z
         self.bounding_tile = bounding_tile
 
-        if not "format" in kwargs:
+        if "format" not in kwargs:
             writer_func = _encode_as_png
             self.image_format = "png"
         elif kwargs["format"].lower() == "png":
